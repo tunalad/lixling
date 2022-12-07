@@ -30,7 +30,7 @@ end-- }}}
 -- CURL Downloading
 function M.curl(file, link)-- {{{
     -- should be async
-    io.popen("curl -o 'plugins/".. file .. "' -s ".. link.. " &"):read("*a")
+    io.popen("curl -o 'plugins/".. file .. "' -s ".. link.. ""):read("*a")
 end-- }}}
 
 -- UNIX diff
