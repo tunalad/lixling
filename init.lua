@@ -46,8 +46,6 @@ local function download_plugins()-- {{{
                 utils.curl(plug..".lua", plugins_list[plug])
                 core.log("LIXLING: Downloaded '".. plug .. ".lua'")
             end
-        else
-                core.log("LIXLING: '".. plug .. " plugin' is already installed.")
         end
     end
 
