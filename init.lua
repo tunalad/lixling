@@ -10,8 +10,6 @@ local utils = require "lixling/utils"
 -----------------------------------------------------------------------
 local plugins_list = {} -- list of the plugins found in the init.lua
 
-
-
 -- test function
 local function hello_world()-- {{{
     core.log("hello world ayy")
@@ -23,15 +21,9 @@ local function get_plugins_list(plug_list)-- {{{
     plugins_list = plug_list
 end-- }}}
 
--- logs out plugins list 
-local function print_plugins_list()-- {{{
-    for plug in pairs(plugins_list) do
-        core.log(plug .. ": " .. plugins_list[plug])
-    end
-end-- }}}
-
 -- looks for unlisted files in the plugins dir
 local function clear_plugins()-- {{{
+    core.log("---------------------------- LIXLING: CLEAR ----------------------------")
     local dir_plugs = utils.dir_lookup("plugins/")
 
     for f in ipairs(dir_plugs) do
@@ -45,6 +37,7 @@ end-- }}}
 
 -- Downloads the plugin (if it's not already installed)
 local function download_plugins()-- {{{
+    core.log("--------------------------- LIXLING: INSTALL ---------------------------")
     local dir_plugs = utils.dir_lookup("plugins/")
 
     for plug in pairs(plugins_list) do
@@ -63,7 +56,8 @@ end-- }}}
 
 -- Updates outdated plugins (atm it just informs you about that)
 local function update_plugins()-- {{{
-    core.log("-----------------------------------------------------------------------")
+    core.log("--------------------------- LIXLING: UPDATE ----------------------------")
+
     command.perform("core:open-log")
     local dir_plugs = utils.dir_lookup("plugins/")
 
