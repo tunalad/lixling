@@ -10,6 +10,8 @@ local utils = require "lixling/utils"
 -----------------------------------------------------------------------
 local plugins_list = {} -- list of the plugins found in the init.lua
 
+
+
 -- test function
 local function hello_world()-- {{{
     core.log("hello world ayy")
@@ -61,13 +63,24 @@ end-- }}}
 
 -- Updates outdated plugins (atm it just informs you about that)
 local function update_plugins()-- {{{
+    core.log("-----------------------------------------------------------------------")
+    command.perform("core:open-log")
+    local dir_plugs = utils.dir_lookup("plugins/")
+
     for plug in pairs(plugins_list) do
-        if utils.diff and utils.string_ends_with(plugins_list[plug], ".lua") then
-            core.log("LIXLING: " .. (plug..".lua") .. " needs an updating")
+        if utils.diff and utils.string_ends_with(plugins_list[plug], ".lua") and utils.array_has_value(dir_plugs, plug..".lua") then
+            core.log("LIXLING: '" .. (plug..".lua") .. "' needs an updating")
+        end
+
+        if utils.string_ends_with(plugins_list[plug], ".git") then
+            local status = utils.git_pull(plug)
+
+            if not status == "Already up to date." then
+                core.log("LIXLING: '" .. plug .. "' repo updated")
+            end
+            core.log("LIXLING: '".. plug.. "' - " .. status)
         end
     end
-
-    command.perform("core:open-log")
 end-- }}}
 -----------------------------------------------------------------------
 

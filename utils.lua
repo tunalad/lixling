@@ -28,18 +28,26 @@ function M.string_ends_with(str, ending)-- {{{
 end-- }}}
 
 -- CURL Downloading
-function M.curl(file, link)
+function M.curl(file, link)-- {{{
     -- should be async
     io.popen("curl -o 'plugins/".. file .. "' -s ".. link.. " &"):read("*a")
-end
+end-- }}}
 
 -- UNIX diff
-function M.diff(old_file, new_file)
+function M.diff(old_file, new_file)-- {{{
     if string.len(io.popen("diff ".. old_file .. " " .. new_file):read("*a")) > 1 then
         return true
     end
 
     return false
+end-- }}}
+
+-- GIT repo updating
+function M.git_pull(local_path, branch)
+    branch = branch or "master"
+    local result = io.popen("git --git-dir plugins/".. local_path .."/.git pull origin ".. branch ..""):read("*a")
+
+    return result
 end
 
 return M
