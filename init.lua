@@ -62,8 +62,10 @@ local function update_plugins()-- {{{
     local dir_plugs = utils.dir_lookup("plugins/")
 
     for plug in pairs(plugins_list) do
-        if utils.diff("plugins/"..plug, plugins_list[plug]) and utils.string_ends_with(plugins_list[plug], ".lua") and utils.array_has_value(dir_plugs, plug..".lua") then
-            core.log("LIXLING: '" .. (plug..".lua") .. "' needs an updating")
+        -- if IS_LISTED and IS_RAW_LUA_FILE_LINK and IS_DOWNLOADED
+        if utils.diff("plugins/"..plug..".lua", "<(curl -s ".. plugins_list[plug]..")") and utils.string_ends_with(plugins_list[plug], ".lua") and utils.array_has_value(dir_plugs, plug..".lua") then
+            --utils.curl(plug..".lua", plugins_list[plug])
+            core.log("LIXLING: Updated: '" .. (plug..".lua") .. "'.")
         end
 
         if utils.string_ends_with(plugins_list[plug], ".git") then
