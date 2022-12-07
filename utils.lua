@@ -30,6 +30,16 @@ end-- }}}
 -- CURL Downloading
 function M.curl(file, link)
     -- should be async
-    io.popen("curl -o 'plugins/".. file .. "' -s ".. link.. ""):read("*a")
+    io.popen("curl -o 'plugins/".. file .. "' -s ".. link.. " &"):read("*a")
 end
+
+-- UNIX diff
+function M.diff(old_file, new_file)
+    if string.len(io.popen("diff ".. old_file .. " " .. new_file):read("*a")) > 1 then
+        return true
+    end
+
+    return false
+end
+
 return M

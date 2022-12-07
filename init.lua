@@ -55,13 +55,25 @@ local function download_plugins()-- {{{
                 core.log("LIXLING: '".. plug .. " plugin' is already installed.")
         end
     end
+
+    command.perform("core:open-log")
 end-- }}}
 
+-- Updates outdated plugins (atm it just informs you about that)
+local function update_plugins()-- {{{
+    for plug in pairs(plugins_list) do
+        if utils.diff and utils.string_ends_with(plugins_list[plug], ".lua") then
+            core.log("LIXLING: " .. (plug..".lua") .. " needs an updating")
+        end
+    end
+
+    command.perform("core:open-log")
+end-- }}}
 -----------------------------------------------------------------------
 
 command.add("core.docview", {["lixling:install"] = download_plugins})
 command.add("core.docview", {["lixling:clear"] = clear_plugins})
---command.add("core.docview", {["lixling:update"] = hello_world})
+command.add("core.docview", {["lixling:update"] = update_plugins})
 --command.add("core.docview", {["lixling:upgrade"] = hello_world})
 
 return { get_plugins_list = get_plugins_list }
