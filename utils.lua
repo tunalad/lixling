@@ -45,7 +45,7 @@ end-- }}}
 -- GIT repo updating
 function M.git_pull(local_path, branch)-- {{{
     branch = branch or "master"
-    local result = io.popen("git --git-dir plugins/".. local_path .."/.git pull origin ".. branch ..""):read("*a")
+    local result = io.popen("git --git-dir ".. local_path .."/.git pull origin ".. branch ..""):read("*a")
 
     return result
 end-- }}}

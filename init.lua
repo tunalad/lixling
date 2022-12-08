@@ -77,7 +77,7 @@ local function update_plugins()-- {{{
         end
 
         if utils.string_ends_with(plugins_list[plug], ".git") then
-            local status = utils.git_pull(plug)
+            local status = utils.git_pull("plugins/"..plug)
 
             if not status == "Already up to date." then
                 core.log("LIXLING: '" .. plug .. "' repo updated")
@@ -86,11 +86,22 @@ local function update_plugins()-- {{{
         end
     end
 end-- }}}
+
+local function upgrade_self()-- {{{
+    local status = utils.git_pull("lixling/")
+
+    if not status == "Already up to date." then
+        core.log("LIXLING: Upgraded.")
+    else
+        core.log("LIXLING: Already up to date.")
+    end
+end-- }}}
+
 -----------------------------------------------------------------------
 
 command.add("core.docview", {["lixling:install"] = download_plugins})
 command.add("core.docview", {["lixling:clear"] = clear_plugins})
 command.add("core.docview", {["lixling:update"] = update_plugins})
---command.add("core.docview", {["lixling:upgrade"] = hello_world})
+command.add("core.docview", {["lixling:upgrade"] = upgrade_self})
 
 return { get_plugins_list = get_plugins_list }
