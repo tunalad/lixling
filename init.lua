@@ -128,9 +128,9 @@ end-- }}}
 
 -----------------------------------------------------------------------
 
-command.add("core.docview", {["lixling:install"] = download_plugins})
-command.add("core.docview", {["lixling:clear"] = clear_plugins})
-command.add("core.docview", {["lixling:update"] = update_plugins})
-command.add("core.docview", {["lixling:upgrade"] = upgrade_self})
+command.add(nil, {["lixling:install"] = download_plugins})
+command.add(nil, {["lixling:clear"] = clear_plugins})
+command.add(nil, {["lixling:update"] = update_plugins})
+command.add(nil, {["lixling:upgrade"] = upgrade_self})
 
 return { get_plugins_list = get_plugins_list }
