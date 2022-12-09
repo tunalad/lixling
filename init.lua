@@ -3,7 +3,6 @@
 local core = require "core"
 local command = require "core.command"
 local os = require "os"
---local io = require "io"
 
 local utils = require "lixling/utils"
 
@@ -26,13 +25,42 @@ local function clear_plugins()-- {{{
     core.log("---------------------------- LIXLING: CLEAR ----------------------------")
     local dir_plugs = utils.dir_lookup("plugins/")
 
+    local clear_list = {}
+    local clear_size = 0
+
     for f in ipairs(dir_plugs) do
-        if(not plugins_list[dir_plugs[f]:sub(1, -5)]) then
-            core.log("LIXLING: file '" .. dir_plugs[f] .. "' can be deleted")
+        if utils.string_ends_with(dir_plugs[f], ".lua") then
+            if plugins_list[dir_plugs[f]:sub(1, -5)] == nil then
+                table.insert(clear_list, dir_plugs[f])
+                clear_size=clear_size+1
+
+                core.log("LIXLING: File '"..dir_plugs[f].."' added to exile list.")
+            end
+        elseif utils.string_ends_with(dir_plugs[f], "/") then
+            if plugins_list[dir_plugs[f]:sub(1, -2)] == nil then
+                table.insert(clear_list, dir_plugs[f])
+                clear_size=clear_size+1
+
+                core.log("LIXLING: Folder '"..dir_plugs[f].."' added to exile list.")
+            end
         end
     end
 
     command.perform("core:open-log")
+
+    core.command_view:enter("LIXLING: Found ".. clear_size .." unlisted plugins, exile them? (y/N)", {
+        submit = function(input)
+            if(string.lower(input) == "y" or string.lower(input) == "yes" ) then
+                for plug in ipairs(clear_list) do
+                    core.log("moving: ".. clear_list[plug])
+                    io.popen("mkdir lixling/exiled"):read()
+                    os.rename("plugins/".. clear_list[plug], "lixling/exiled/".. clear_list[plug])
+                end
+                core.log("LIXLING: ".. clear_size .. " plugins exiled. You can find them in lixling/exiled") 
+            end
+        end
+    })
+
 end-- }}}
 
 -- Downloads the plugin (if it's not already installed)
@@ -87,6 +115,7 @@ local function update_plugins()-- {{{
     end
 end-- }}}
 
+-- Upgrades self
 local function upgrade_self()-- {{{
     local status = utils.git_pull("lixling/")
 
