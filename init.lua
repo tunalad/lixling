@@ -16,7 +16,7 @@ local function hello_world()-- {{{
 end-- }}}
 	
 -- function gets the table from main config file and assigns it to the `plugins_list` in this file
-local function get_plugins_list(plug_list)-- {{{
+local function plugins(plug_list)-- {{{
     plugins_list = plug_list
 end-- }}}
 
@@ -90,7 +90,7 @@ local function download_plugins()-- {{{
     command.perform("core:open-log")
 end-- }}}
 
--- Updates outdated plugins (atm it just informs you about that)
+-- Updates outdated plugins
 local function update_plugins()-- {{{
     core.log("--------------------------- LIXLING: UPDATE ----------------------------")
 
@@ -133,4 +133,4 @@ command.add(nil, {["lixling:clear"] = clear_plugins})
 command.add(nil, {["lixling:update"] = update_plugins})
 command.add(nil, {["lixling:upgrade"] = upgrade_self})
 
-return { get_plugins_list = get_plugins_list }
+return { plugins = plugins }
