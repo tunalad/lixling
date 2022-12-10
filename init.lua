@@ -69,6 +69,7 @@ local function download_plugins()-- {{{
     local dir_plugs = utils.dir_lookup("plugins/")
 
     for plug in pairs(plugins_list) do
+        -- If it's a table
         if type(plugins_list[plug]) == "table" then
             for i in pairs(plugins_list[plug]) do
                 if i == "branch" then
@@ -79,6 +80,8 @@ local function download_plugins()-- {{{
                     end
                 end
             end
+
+        -- If it's NOT a table
         else
             -- RAW .LUA FILE
             if not utils.array_has_value(dir_plugs, plug..".lua") then
@@ -110,7 +113,8 @@ local function update_plugins()-- {{{
     local dir_plugs = utils.dir_lookup("plugins/")
 
     for plug in pairs(plugins_list) do
-            if type(plugins_list[plug]) == "table" then
+        -- If it's a table
+        if type(plugins_list[plug]) == "table" then
             for i in pairs(plugins_list[plug]) do
                 local status = utils.git_pull("plugins/"..plug, plugins_list[plug][i])
 
@@ -118,6 +122,10 @@ local function update_plugins()-- {{{
                     core.log("LIXLING: '" .. plug .. "' repo updated")
                 end
             end
+
+        -- If it's NOT a table
+        elseif plugins_list[plug] == "" then
+            --core.log("LIXLING: '"..plug.."' doesn't have a URL.")
         else
             -- if IS_LISTED and IS_RAW_LUA_FILE_LINK and IS_DOWNLOADED
             if utils.diff("plugins/"..plug..".lua", "<(curl -s ".. plugins_list[plug]..")")
