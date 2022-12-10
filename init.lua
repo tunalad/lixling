@@ -110,19 +110,30 @@ local function update_plugins()-- {{{
     local dir_plugs = utils.dir_lookup("plugins/")
 
     for plug in pairs(plugins_list) do
-        -- if IS_LISTED and IS_RAW_LUA_FILE_LINK and IS_DOWNLOADED
-        if utils.diff("plugins/"..plug..".lua", "<(curl -s ".. plugins_list[plug]..")") and utils.string_ends_with(plugins_list[plug], ".lua") and utils.array_has_value(dir_plugs, plug..".lua") then
-            utils.curl(plug..".lua", plugins_list[plug])
-            core.log("LIXLING: Updated: '" .. (plug..".lua") .. "'.")
-        end
+            if type(plugins_list[plug]) == "table" then
+            for i in pairs(plugins_list[plug]) do
+                local status = utils.git_pull("plugins/"..plug, plugins_list[plug][i])
 
-        if utils.string_ends_with(plugins_list[plug], ".git") then
-            local status = utils.git_pull("plugins/"..plug)
-
-            if not status == "Already up to date." then
-                core.log("LIXLING: '" .. plug .. "' repo updated")
+                if not status == "Already up to date." then
+                    core.log("LIXLING: '" .. plug .. "' repo updated")
+                end
             end
-            --core.log("LIXLING: '".. plug.. "' - " .. status)
+        else
+            -- if IS_LISTED and IS_RAW_LUA_FILE_LINK and IS_DOWNLOADED
+            if utils.diff("plugins/"..plug..".lua", "<(curl -s ".. plugins_list[plug]..")")
+                and utils.string_ends_with(plugins_list[plug], ".lua") and utils.array_has_value(dir_plugs, plug..".lua") then
+                utils.curl(plug..".lua", plugins_list[plug])
+                core.log("LIXLING: Updated: '" .. (plug..".lua") .. "'.")
+            end
+
+            if utils.string_ends_with(plugins_list[plug], ".git") then
+                local status = utils.git_pull("plugins/"..plug)
+
+                if not status == "Already up to date." then
+                    core.log("LIXLING: '" .. plug .. "' repo updated")
+                end
+                --core.log("LIXLING: '".. plug.. "' - " .. status)
+            end
         end
     end
 end-- }}}
