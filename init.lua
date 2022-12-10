@@ -69,20 +69,32 @@ local function download_plugins()-- {{{
     local dir_plugs = utils.dir_lookup("plugins/")
 
     for plug in pairs(plugins_list) do
-        -- RAW .LUA FILE
-        if not utils.array_has_value(dir_plugs, plug..".lua") then
-            if utils.string_ends_with(plugins_list[plug], ".lua") then
-                utils.curl(plug..".lua", plugins_list[plug])
-                core.log("LIXLING: Downloaded '".. plug .. ".lua'")
+        if type(plugins_list[plug]) == "table" then
+            for i in pairs(plugins_list[plug]) do
+                if i == "branch" then
+                    local status = utils.git_clone("plugins/"..plug, plugins_list[plug]["url"], plugins_list[plug][i])
+
+                    if status then
+                        core.log("LIXLING: Downloaded '" .. plug .. "' ")
+                    end
+                end
             end
-        end
+        else
+            -- RAW .LUA FILE
+            if not utils.array_has_value(dir_plugs, plug..".lua") then
+                if utils.string_ends_with(plugins_list[plug], ".lua") then
+                    utils.curl(plug..".lua", plugins_list[plug])
+                    core.log("LIXLING: Downloaded '".. plug .. ".lua'")
+                end
+            end
 
-        -- GIT REPO CLONE
-        if utils.string_ends_with(plugins_list[plug], ".git") then
-            local status = utils.git_clone("plugins/"..plug, plugins_list[plug])
+            -- GIT REPO CLONE
+            if utils.string_ends_with(plugins_list[plug], ".git") then
+                local status = utils.git_clone("plugins/"..plug, plugins_list[plug])
 
-            if status then
-                core.log("LIXLING: Downloaded '" .. plug .. "' ")
+                if status then
+                    core.log("LIXLING: Downloaded '" .. plug .. "' ")
+                end
             end
         end
     end

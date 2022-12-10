@@ -51,8 +51,9 @@ function M.git_pull(local_path, branch)-- {{{
 end-- }}}
 
 -- GIT repo clone
-function M.git_clone(local_path, link)-- {{{
-    local result = io.popen("git clone '" ..link.. "' " ..local_path.."/ && echo -n 'repo cloned'"):read("*a")
+function M.git_clone(local_path, link, branch)-- {{{
+    branch = branch or "master"
+    local result = io.popen("git clone -b ".. branch .." '".. link .."' ".. local_path .."/ && echo -n 'repo cloned'"):read("*a")
 
     if result == "repo cloned" then
         return true
