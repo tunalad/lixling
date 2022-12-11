@@ -60,27 +60,30 @@ local function clear_plugins()-- {{{
     core.log("LIXLING: No unlisted plugins found.")
 end-- }}}
 
--- Downloads the plugin (if it's not already installed)
+-----------------------------------------------------------------------
+-- DOWNLOADING
+-----------------------------------------------------------------------
 -- RAW .LUA FILE
-local function download_raw(dir_plugs, plugins_list, plug)
+local function download_raw(dir_plugs, plugins_list, plug)-- {{{
     if not utils.array_has_value(dir_plugs, plug..".lua") then
-        if utils.string_ends_with(plugins_list[plug], ".lua") then
-            utils.curl(plug..".lua", plugins_list[plug])
+        if utils.string_ends_with(plugins_list[plug][1], ".lua") then
+            utils.curl(plug..".lua", plugins_list[plug][1])
             core.log("LIXLING: Downloaded '".. plug .. ".lua'")
         end
     end
-end
+end-- }}}
 
 -- GIT REPO CLONE
-local function download_repo(plugins_list, plug)
-    if utils.string_ends_with(plugins_list[plug], ".git") then
-        local status = utils.git_clone("plugins/"..plug, plugins_list[plug])
+local function download_repo(plugins_list, plug, branch)-- {{{
+    branch = branch or "master"
+    if utils.string_ends_with(plugins_list[plug][1], ".git") then
+        local status = utils.git_clone("plugins/"..plug, plugins_list[plug][1])
 
         if status then
             core.log("LIXLING: Downloaded '" .. plug .. "' ")
         end
     end
-end
+end-- }}}
 
 local function download_plugins()-- {{{
     core.log("--------------------------- LIXLING: INSTALL ---------------------------")
@@ -89,22 +92,23 @@ local function download_plugins()-- {{{
     local dir_plugs = utils.dir_lookup("plugins/")
 
     for plug in pairs(plugins_list) do
-        -- SUB-TABLE
-        if type(plugins_list[plug]) == "table" then
-            for i in pairs(plugins_list[plug]) do
-                -- DOWNLOADS FROM BRANCH
-                if i == "branch" and utils.string_ends_with(plugins_list[plug]["url"], ".git") then
-                    local status = utils.git_clone("plugins/"..plug, plugins_list[plug]["url"], plugins_list[plug][i])
+        -- single file + default git branch
+        if (#plugins_list[plug] == 1) then
+            download_raw(dir_plugs, plugins_list, plug)
+            download_repo(plugins_list, plug)
 
-                    if status then
-                        core.log("LIXLING: Downloaded '" .. plug .. "' ")
-                    end
-                end
-            end return 0
+        -- git branch handling
+        elseif (#plugins_list[plug] == 2) then
+            download_repo(plugins_list, plug, plugins_list[plug] == 2)
+
+        -- git branch + hook handle
+        elseif (#plugins_list[plug] == 3) and (#plugins_list[plug][2] ~= 0) then
+            download_repo(plugins_list, plug, plugins_list[plug][2])
+            os.execute("cd plugins/".. plug .."; "..plugins_list[plug][3])
         end
 
-        download_raw(dir_plugs, plugins_list, plug)
-        download_repo(plugins_list, plug)
+        --download_raw(dir_plugs, plugins_list, plug)
+        --download_repo(plugins_list, plug)
     end
 
 end-- }}}
