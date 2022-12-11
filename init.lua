@@ -113,7 +113,33 @@ local function download_plugins()-- {{{
 
 end-- }}}
 
--- Updates outdated plugins
+
+-----------------------------------------------------------------------
+-- UPDATING
+-----------------------------------------------------------------------
+-- RAW .LUA FILE
+local function update_raw(dir_plugs, plugins_list, plug)-- {{{
+    -- if IS_LISTED and IS_RAW_LUA_FILE_LINK and IS_DOWNLOADED
+    if utils.diff("plugins/"..plug..".lua", "<(curl -s ".. plugins_list[plug][1]..")")
+            and utils.string_ends_with(plugins_list[plug][1], ".lua")and utils.array_has_value(dir_plugs, plug..".lua") then
+
+        utils.curl(plug..".lua", plugins_list[plug][1])
+        core.log("LIXLING: Updated: '".. (plug..".lua") .."'.")
+    end
+end-- }}}
+
+-- GIT REPO PULL
+local function update_repo(plugins_list, plug, branch)-- {{{
+    -- IF GIT REPO
+    if utils.string_ends_with(plugins_list[plug][1], ".git") then
+        local status = utils.git_pull("plugins/"..plug)
+
+        if not status == "Already up to date." then
+            core.log("LIXLING: '".. plug .. "'repo updated")
+        end
+    end
+end-- }}}
+
 local function update_plugins()-- {{{
     core.log("--------------------------- LIXLING: UPDATE ----------------------------")
     command.perform("core:open-log")
@@ -121,36 +147,23 @@ local function update_plugins()-- {{{
     local dir_plugs = utils.dir_lookup("plugins/")
 
     for plug in pairs(plugins_list) do
-        -- SUB-TABLE
-        if type(plugins_list[plug]) == "table" then
-            for i in pairs(plugins_list[plug]) do
-                local status = utils.git_pull("plugins/"..plug, plugins_list[plug][i])
+        -- single file + default git branch
+        if (#plugins_list[plug] == 1) then
+            update_raw(dir_plugs, plugins_list, plug)
+            update_repo(plugins_list, plug)
 
-                if not status == "Already up to date." then
-                    core.log("LIXLING: '" .. plug .. "' repo updated")
-                end
-            end return 0
-        end
+        -- git branch handling
+        elseif (#plugins_list[plug] == 2) then
+            update_repo(plugins_list, plug, plugins_list[plug] == 2)
 
-        if plugins_list[plug] ~= "" then
-            -- if IS_LISTED and IS_RAW_LUA_FILE_LINK and IS_DOWNLOADED
-            if utils.diff("plugins/"..plug..".lua", "<(curl -s ".. plugins_list[plug]..")")
-                    and utils.string_ends_with(plugins_list[plug], ".lua")and utils.array_has_value(dir_plugs, plug..".lua") then
-
-                utils.curl(plug..".lua", plugins_list[plug])
-                core.log("LIXLING: Updated: '" .. (plug..".lua") .. "'.")
-            end
-
-            -- IF GIT REPO
-            if utils.string_ends_with(plugins_list[plug], ".git") then
-                local status = utils.git_pull("plugins/"..plug)
-
-                if not status == "Already up to date." then
-                    core.log("LIXLING: '" .. plug .. "' repo updated")
-                end
-            end
+        -- git branch + hook handle
+        elseif (#plugins_list[plug] == 3) and (#plugins_list[plug][2] ~= 0) then
+            update_repo(plugins_list, plug, plugins_list[plug][2])
+            os.execute("cd plugins/".. plug .."; "..plugins_list[plug][3])
         end
     end
+
+
 end-- }}}
 
 -- Upgrades self
