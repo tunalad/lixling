@@ -105,10 +105,14 @@ local function download_plugins()-- {{{
         elseif (#plugins_list[plug] == 3) and (#plugins_list[plug][2] ~= 0) then
             download_repo(plugins_list, plug, plugins_list[plug][2])
             os.execute("cd plugins/".. plug .."; "..plugins_list[plug][3])
-        end
+        
+        -- if in old srting format
+        elseif type(plugins_list[plug]) == "string" then
+            local dummy = { [plug] = {plugins_list[plug]} }
 
-        --download_raw(dir_plugs, plugins_list, plug)
-        --download_repo(plugins_list, plug)
+            download_raw(dir_plugs, dummy , plug)
+            download_repo(dummy, plug)
+        end
     end
 
 end-- }}}
@@ -160,6 +164,13 @@ local function update_plugins()-- {{{
         elseif (#plugins_list[plug] == 3) and (#plugins_list[plug][2] ~= 0) then
             update_repo(plugins_list, plug, plugins_list[plug][2])
             os.execute("cd plugins/".. plug .."; "..plugins_list[plug][3])
+
+        -- if in old srting format
+        elseif type(plugins_list[plug]) == "string" then
+            local dummy = { [plug] = {plugins_list[plug]} }
+
+            update_raw(dir_plugs, dummy , plug)
+            update_repo(dummy, plug)
         end
     end
 
