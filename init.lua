@@ -61,6 +61,27 @@ local function clear_plugins()-- {{{
 end-- }}}
 
 -- Downloads the plugin (if it's not already installed)
+-- RAW .LUA FILE
+local function download_raw(dir_plugs, plugins_list, plug)
+    if not utils.array_has_value(dir_plugs, plug..".lua") then
+        if utils.string_ends_with(plugins_list[plug], ".lua") then
+            utils.curl(plug..".lua", plugins_list[plug])
+            core.log("LIXLING: Downloaded '".. plug .. ".lua'")
+        end
+    end
+end
+
+-- GIT REPO CLONE
+local function download_repo(plugins_list, plug)
+    if utils.string_ends_with(plugins_list[plug], ".git") then
+        local status = utils.git_clone("plugins/"..plug, plugins_list[plug])
+
+        if status then
+            core.log("LIXLING: Downloaded '" .. plug .. "' ")
+        end
+    end
+end
+
 local function download_plugins()-- {{{
     core.log("--------------------------- LIXLING: INSTALL ---------------------------")
     command.perform("core:open-log")
@@ -82,22 +103,8 @@ local function download_plugins()-- {{{
             end return 0
         end
 
-        -- RAW .LUA FILE
-        if not utils.array_has_value(dir_plugs, plug..".lua") then
-            if utils.string_ends_with(plugins_list[plug], ".lua") then
-                utils.curl(plug..".lua", plugins_list[plug])
-                core.log("LIXLING: Downloaded '".. plug .. ".lua'")
-            end
-        end
-
-        -- GIT REPO CLONE
-        if utils.string_ends_with(plugins_list[plug], ".git") then
-            local status = utils.git_clone("plugins/"..plug, plugins_list[plug])
-
-            if status then
-                core.log("LIXLING: Downloaded '" .. plug .. "' ")
-            end
-        end
+        download_raw(dir_plugs, plugins_list, plug)
+        download_repo(plugins_list, plug)
     end
 
 end-- }}}
