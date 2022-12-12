@@ -74,7 +74,7 @@ To whitelist a plugin, give it an empty url value:
 ### 3. Examples:
 ```lua
 lixling.plugins({
-    -- Lixling will ignore this plugin when exiling files
+    -- Lixling will ignore this plugin when exiling
     ["testplug"] = "",
     
     -- Lixling will download (curl) the linked file as "minimap.lua" 
