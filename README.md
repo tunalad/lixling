@@ -5,9 +5,9 @@ Goal of this project was to write a small and simple plugin manager for [Lite XL
 # Table of contents
 1. [Installation](#installation)
 2. [Usage](#usage)
-2.1 [Configuration](#configuration)
-2.2 [Adding plugins](#adding-plugins)
-2.3 [Commands](#commands)
+    1. [Configuration](#configuration)
+    2. [Adding plugins](#adding-plugins)
+    3. [Commands](#commands)
 3. [Examples](#examples)
 4. [Known issues](#known-issues)
 
