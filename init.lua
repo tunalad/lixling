@@ -77,7 +77,7 @@ end-- }}}
 local function download_repo(plugins_list, plug, branch)-- {{{
     branch = branch or "master"
     if utils.string_ends_with(plugins_list[plug][1], ".git") then
-        local status = utils.git_clone("plugins/"..plug, plugins_list[plug][1])
+        local status = utils.git_clone("plugins/"..plug, plugins_list[plug][1], branch)
 
         if status then
             core.log("LIXLING: Downloaded '" .. plug .. "' ")
@@ -102,10 +102,11 @@ local function download_plugins()-- {{{
 
         -- git branch handling
         elseif (#plugins_list[plug] == 2) then
-            download_repo(plugins_list, plug, plugins_list[plug] == 2)
+            download_repo(plugins_list, plug, plugins_list[plug][2])
 
         -- git branch + hook handle
         elseif (#plugins_list[plug] == 3) and (#plugins_list[plug][2] ~= 0) then
+            core.log(plug.." : "..plugins_list[plug][2])
             download_repo(plugins_list, plug, plugins_list[plug][2])
         
         -- if in old srting format
@@ -135,9 +136,9 @@ end-- }}}
 
 -- GIT REPO PULL
 local function update_repo(plugins_list, plug, branch)-- {{{
-    -- IF GIT REPO
+    branch = branch or "master"
     if utils.string_ends_with(plugins_list[plug][1], ".git") then
-        local status = utils.git_pull("plugins/"..plug)
+        local status = utils.git_pull("plugins/"..plug, branch)
 
         if not status == "Already up to date." then
             core.log("LIXLING: '".. plug .. "' repo updated.")
