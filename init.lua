@@ -47,11 +47,11 @@ local function clear_plugins()-- {{{
             submit = function(input)
                 if(string.lower(input) == "y" or string.lower(input) == "yes" ) then
                     for plug in ipairs(clear_list) do
-                        core.log("moving: ".. clear_list[plug])
+                        core.log("LIXLING: Moving: '".. clear_list[plug].."'.")
                         io.popen("mkdir lixling/exiled"):read()
                         os.rename("plugins/".. clear_list[plug], "lixling/exiled/".. clear_list[plug])
                     end
-                    core.log("LIXLING: ".. clear_size .. " plugins exiled. You can find them in lixling/exiled") 
+                    core.log("LIXLING: ".. clear_size .. " plugins exiled. You can find them in '~/.config/lite-xl/lixling/exiled'.") 
                 end
             end
         })
@@ -80,7 +80,7 @@ local function download_repo(plugins_list, plug, branch)-- {{{
         local status = utils.git_clone("plugins/"..plug, plugins_list[plug][1], branch)
 
         if status then
-            core.log("LIXLING: Downloaded '" .. plug .. "' ")
+            core.log("LIXLING: Downloaded '" .. plug .. "'.")
             if plugins_list[plug][3] ~= nil then
                 os.execute("cd plugins/".. plug .."; "..plugins_list[plug][3])
             end
@@ -106,7 +106,6 @@ local function download_plugins()-- {{{
 
         -- git branch + hook handle
         elseif (#plugins_list[plug] == 3) and (#plugins_list[plug][2] ~= 0) then
-            core.log(plug.." : "..plugins_list[plug][2])
             download_repo(plugins_list, plug, plugins_list[plug][2])
         
         -- if in old srting format
