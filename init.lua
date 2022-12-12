@@ -81,6 +81,9 @@ local function download_repo(plugins_list, plug, branch)-- {{{
 
         if status then
             core.log("LIXLING: Downloaded '" .. plug .. "' ")
+            if plugins_list[plug][3] ~= nil then
+                os.execute("cd plugins/".. plug .."; "..plugins_list[plug][3])
+            end
         end
     end
 end-- }}}
@@ -104,7 +107,6 @@ local function download_plugins()-- {{{
         -- git branch + hook handle
         elseif (#plugins_list[plug] == 3) and (#plugins_list[plug][2] ~= 0) then
             download_repo(plugins_list, plug, plugins_list[plug][2])
-            os.execute("cd plugins/".. plug .."; "..plugins_list[plug][3])
         
         -- if in old srting format
         elseif type(plugins_list[plug]) == "string" then
@@ -114,7 +116,6 @@ local function download_plugins()-- {{{
             download_repo(dummy, plug)
         end
     end
-
 end-- }}}
 
 
@@ -139,7 +140,11 @@ local function update_repo(plugins_list, plug, branch)-- {{{
         local status = utils.git_pull("plugins/"..plug)
 
         if not status == "Already up to date." then
-            core.log("LIXLING: '".. plug .. "'repo updated")
+            core.log("LIXLING: '".. plug .. "' repo updated.")
+
+            if plugins_list[plug][3] ~= nil then
+                os.execute("cd plugins/".. plug .."; "..plugins_list[plug][3])
+            end
         end
     end
 end-- }}}
@@ -163,7 +168,6 @@ local function update_plugins()-- {{{
         -- git branch + hook handle
         elseif (#plugins_list[plug] == 3) and (#plugins_list[plug][2] ~= 0) then
             update_repo(plugins_list, plug, plugins_list[plug][2])
-            os.execute("cd plugins/".. plug .."; "..plugins_list[plug][3])
 
         -- if in old srting format
         elseif type(plugins_list[plug]) == "string" then
