@@ -94,28 +94,31 @@ local function download_plugins()-- {{{
 
     local dir_plugs = utils.dir_lookup("plugins/")
 
-    for plug in pairs(plugins_list) do
-        -- single file + default git branch
-        if (#plugins_list[plug] == 1) then
-            download_raw(dir_plugs, plugins_list, plug)
-            download_repo(plugins_list, plug)
+    core.add_thread(function()
+        for plug in pairs(plugins_list) do
+            -- single file + default git branch
+            if (#plugins_list[plug] == 1) then
+                download_raw(dir_plugs, plugins_list, plug)
+                download_repo(plugins_list, plug)
 
-        -- git branch handling
-        elseif (#plugins_list[plug] == 2) then
-            download_repo(plugins_list, plug, plugins_list[plug][2])
+            -- git branch handling
+            elseif (#plugins_list[plug] == 2) then
+                download_repo(plugins_list, plug, plugins_list[plug][2])
 
-        -- git branch + hook handle
-        elseif (#plugins_list[plug] == 3) and (#plugins_list[plug][2] ~= 0) then
-            download_repo(plugins_list, plug, plugins_list[plug][2])
-        
-        -- if in old srting format
-        elseif type(plugins_list[plug]) == "string" then
-            local dummy = { [plug] = {plugins_list[plug]} }
+            -- git branch + hook handle
+            elseif (#plugins_list[plug] == 3) and (#plugins_list[plug][2] ~= 0) then
+                download_repo(plugins_list, plug, plugins_list[plug][2])
+            
+            -- if in old srting format
+            elseif type(plugins_list[plug]) == "string" then
+                local dummy = { [plug] = {plugins_list[plug]} }
 
-            download_raw(dir_plugs, dummy , plug)
-            download_repo(dummy, plug)
+                download_raw(dir_plugs, dummy , plug)
+                download_repo(dummy, plug)
+            end
+            coroutine.yield(0.1)
         end
-    end
+    end)
 end-- }}}
 
 
@@ -155,29 +158,31 @@ local function update_plugins()-- {{{
 
     local dir_plugs = utils.dir_lookup("plugins/")
 
-    for plug in pairs(plugins_list) do
-        -- single file + default git branch
-        if (#plugins_list[plug] == 1) then
-            update_raw(dir_plugs, plugins_list, plug)
-            update_repo(plugins_list, plug)
+    core.add_thread(function()
+        for plug in pairs(plugins_list) do
+            -- single file + default git branch
+            if (#plugins_list[plug] == 1) then
+                update_raw(dir_plugs, plugins_list, plug)
+                update_repo(plugins_list, plug)
 
-        -- git branch handling
-        elseif (#plugins_list[plug] == 2) then
-            update_repo(plugins_list, plug, plugins_list[plug] == 2)
+            -- git branch handling
+            elseif (#plugins_list[plug] == 2) then
+                update_repo(plugins_list, plug, plugins_list[plug] == 2)
 
-        -- git branch + hook handle
-        elseif (#plugins_list[plug] == 3) and (#plugins_list[plug][2] ~= 0) then
-            update_repo(plugins_list, plug, plugins_list[plug][2])
+            -- git branch + hook handle
+            elseif (#plugins_list[plug] == 3) and (#plugins_list[plug][2] ~= 0) then
+                update_repo(plugins_list, plug, plugins_list[plug][2])
 
-        -- if in old srting format
-        elseif type(plugins_list[plug]) == "string" then
-            local dummy = { [plug] = {plugins_list[plug]} }
+            -- if in old srting format
+            elseif type(plugins_list[plug]) == "string" then
+                local dummy = { [plug] = {plugins_list[plug]} }
 
-            update_raw(dir_plugs, dummy , plug)
-            update_repo(dummy, plug)
+                update_raw(dir_plugs, dummy , plug)
+                update_repo(dummy, plug)
+            end
+            coroutine.yield(0.1)
         end
-    end
-
+    end)
 
 end-- }}}
 
