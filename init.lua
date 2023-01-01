@@ -16,7 +16,7 @@ end-- }}}
 
 -- Looks for unlisted files in the plugins dir
 local function clear_plugins()-- {{{
-    core.log("---------------------------- LIXLING: CLEAR ----------------------------")
+    core.log("LIXLING CLEAR: Running the clearing process. Please wait.")
     command.perform("core:open-log")
 
     local dir_plugs = utils.dir_lookup("plugins/")
@@ -30,34 +30,34 @@ local function clear_plugins()-- {{{
             table.insert(clear_list, dir_plugs[f])
             clear_size=clear_size+1
 
-            core.log("LIXLING: File '"..dir_plugs[f].."' added to exile list.")
+            core.log("LIXLING CLEAR: File '"..dir_plugs[f].."' added to exile list.")
 
         -- If plugin ends with `/` AND is in list
         elseif utils.string_ends_with(dir_plugs[f], "/") and plugins_list[dir_plugs[f]:sub(1, -2)] == nil then
             table.insert(clear_list, dir_plugs[f])
             clear_size=clear_size+1
 
-            core.log("LIXLING: Folder '"..dir_plugs[f].."' added to exile list.")
+            core.log("LIXLING CLEAR: Folder '"..dir_plugs[f].."' added to exile list.")
         end
     end
 
     -- Handles clearing user input
     if clear_size > 0 then
-        core.command_view:enter("LIXLING: Found ".. clear_size .." unlisted plugins, exile them? (y/N)", {
+        core.command_view:enter("LIXLING CLEAR: Found ".. clear_size .." unlisted plugins, exile them? (y/N)", {
             submit = function(input)
                 if(string.lower(input) == "y" or string.lower(input) == "yes" ) then
                     for plug in ipairs(clear_list) do
-                        core.log("LIXLING: Moving: '".. clear_list[plug].."'.")
+                        core.log("LIXLING CLEAR: Moving: '".. clear_list[plug].."'.")
                         io.popen("mkdir lixling/exiled"):read()
                         os.rename("plugins/".. clear_list[plug], "lixling/exiled/".. clear_list[plug])
                     end
-                    core.log("LIXLING: ".. clear_size .. " plugins exiled. You can find them in '~/.config/lite-xl/lixling/exiled'.") 
+                    core.log("LIXLING CLEAR: ".. clear_size .. " plugins exiled. You can find them in '~/.config/lite-xl/lixling/exiled'.") 
                 end
             end
         })
         return 0
     end
-    core.log("LIXLING: No unlisted plugins found.")
+    core.log("LIXLING CLEAR: No unlisted plugins found.")
 end-- }}}
 
 -----------------------------------------------------------------------
@@ -89,7 +89,7 @@ local function download_repo(plugins_list, plug, branch)-- {{{
 end-- }}}
 
 local function download_plugins()-- {{{
-    core.log("--------------------------- LIXLING: INSTALL ---------------------------")
+    core.log("LIXLING INSTALL: Running the install process. Please wait.")
     command.perform("core:open-log")
 
     local dir_plugs = utils.dir_lookup("plugins/")
@@ -118,6 +118,7 @@ local function download_plugins()-- {{{
             end
             coroutine.yield(0.1)
         end
+        core.log("LIXLING INSTALL: All plugins have been downloaded.")
     end)
 end-- }}}
 
@@ -132,7 +133,7 @@ local function update_raw(dir_plugs, plugins_list, plug)-- {{{
             and utils.string_ends_with(plugins_list[plug][1], ".lua")and utils.array_has_value(dir_plugs, plug..".lua") then
 
         utils.curl(plug..".lua", plugins_list[plug][1])
-        core.log("LIXLING: Updated: '".. (plug..".lua") .."'.")
+        core.log("LIXLING: UPDATE: '".. (plug..".lua") .."'.")
     end
 end-- }}}
 
@@ -153,7 +154,7 @@ local function update_repo(plugins_list, plug, branch)-- {{{
 end-- }}}
 
 local function update_plugins()-- {{{
-    core.log("--------------------------- LIXLING: UPDATE ----------------------------")
+    core.log("LIXLING Update: Running the update process. Please wait.")
     command.perform("core:open-log")
 
     local dir_plugs = utils.dir_lookup("plugins/")
@@ -182,19 +183,25 @@ local function update_plugins()-- {{{
             end
             coroutine.yield(0.1)
         end
+        core.log("LIXLING UPDATE: All plugins are up to date.")
     end)
 
 end-- }}}
 
 -- Upgrades self
 local function upgrade_self()-- {{{
-    local status = utils.git_pull("lixling/")
+    core.log("LIXLING UPGRADE: Running the upgrade process. Please wait.")
 
-    if not status == "Already up to date." then
-        core.log("LIXLING: Upgraded.")
-        return 0
-    end
-    core.log("LIXLING: Already up to date.")
+    core.add_thread(function()
+        coroutine.yield(0.1)
+        local status = utils.git_pull("lixling/")
+
+        if not status == "Already up to date." then
+            core.log("LIXLING UPGRADE: Upgraded to the latest version.")
+            return 0
+        end
+        core.log("LIXLING UPGRADE: Already up to date.")
+    end)
 end-- }}}
 
 -----------------------------------------------------------------------
