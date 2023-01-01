@@ -1,6 +1,6 @@
 # Lixling
-Minimalist-ish Lite XL plugin manager inspired by vim-plug.
-Goal of this project was to write a small and simple plugin manager for [Lite XL](https://lite-xl.com/) that doesn't depend on any lua modules or programs (except git). 
+Minimalist-ish [Lite XL](https://lite-xl.com/) plugin manager inspired by [ vim-plug](https://github.com/junegunn/vim-plug).
+The goal of this project was to write a small and simple plugin manager for Lite XL that doesn't depend on any lua modules or programs (except git) that aren't included with the text editor already.
 
 # Table of contents
 1. [Installation](#installation)
@@ -40,16 +40,16 @@ lixling.plugins({
 ```
 You simply give the key a link of a raw `.lua` file or a valid `.git` repository. If it's a raw `.lua` link, it will `curl` to your `plugins` directory with the key as name. So if we called our plugin `banana`, it will download that plugin as `banana.lua`. Same goes with the git repo link, it will clone everything into `banana/` directory.
 
-**IMPORTANT: DO NOT LIST PRIVATE REPOSITORIES.** When downloading & updating from repositories, it will freeze you Lite XL for until it finishes it's job. Cloning private repositories will ask you for a password, thus freezing your text editor COMPLETELY (I haven't tested that theory, but it should be the case). You have been warned.
+**Note**: Don't add private repositories to the list. When cloning, git will ask for your password, thus stopping the plugin from installing and updating the latter plugins in the list.
 
 ### 2.2.2. Non-master branch
-By default, Lixling will assume that we're cloning and pulling from a `master` branch. If we want to clone from a different repo, you'll have to specify it as the second array element:
+By default, Lixling will assume that we're cloning and pulling from the `master` branch. If we want to clone from a different branch, you'll have to specify it as the second element:
 ```lua
 ["name"] = { "git link", "branch" }
 ```
 
 ### 2.2.3. Post-download hook
-Some plugins require extra steps after downloading. In those cases, you can give the array a third element. 
+Some plugins require extra steps after downloading. In those cases, you can add a command as the third element.
 ```lua
 ["name"] = { "`.git` link", "branch", "post-download hook" }
 ```
@@ -92,7 +92,7 @@ lixling.plugins({
     -- Lixling will clone/pull "terminal/" from the "master" and run the "make release" command
     ["terminal"] = { "https://github.com/benjcollins/lite-xl-terminal.git", "master", "make release" },
     
-    -- Lixling will clone/pull "exter" from the "main" and run the "mv exterm.lua init.lua" command
+    -- Lixling will clone/pull "exterm" from the "main" and run the "mv exterm.lua init.lua" command
     ["exterm"] = { "https://github.com/ShadiestGoat/lite-xl-exterm.git", "main", "mv exterm.lua init.lua" },
 })
 ```
@@ -100,6 +100,5 @@ lixling.plugins({
 # 4. Known issues 
 - Windows isn't supported.
 - Exiling folders won't work if they're already in the `exiled` directory 
-- Downloading & updating commands freeze Lite XL until they finish executing. I'm not even sure if multiprocessing is possible in pure lua.
 
-Not that this is my first time ever coding something in lua. If there's any more problems, report them by open an issue. 
+Note that this is my first time ever coding something in lua. If there's any more problems, report them by opening an issue. 
