@@ -1,3 +1,5 @@
+local core = require "core"
+
 local M = {}
 
 -- Lists items in a directory and returns an array
@@ -29,35 +31,53 @@ end-- }}}
 
 -- CURL Downloading
 function M.curl(file, link)-- {{{
-    -- should be async
-    io.popen("curl -o 'plugins/".. file .. "' -s ".. link.. ""):read("*a")
+    local curl = process.start { "sh", "-c", "curl -o 'plugins/".. file .. "' -s ".. link.. " && echo 'file downloaded'" }
+
+    while curl:running() do coroutine.yield(0.1) end
+    if curl:read_stdout() == "file downloaded" then return true end
+
+    return false
 end-- }}}
 
 -- UNIX diff
 function M.diff(old_file, new_file)-- {{{
-    if string.len(io.popen("diff ".. old_file .. " " .. new_file):read("*a")) > 1 then
-        return true
-    end
+    core.add_thread(function()
+        local diff = process.start { "sh", "-c", "diff ".. old_file .." ".. new_file .." | wc -l" }
 
-    return false
+        while diff:running() do
+            coroutine.yield(0.1)
+        end
+
+        if tonumber(diff:read_stdout()) > 1 then
+            return true
+        end
+
+        return false
+    end)
 end-- }}}
 
 -- GIT repo updating
 function M.git_pull(local_path, branch)-- {{{
     branch = branch or "master"
-    local result = io.popen("git --git-dir ".. local_path .."/.git pull origin ".. branch ..""):read("*a")
 
-    return result
+    local result = process.start { "sh", "-c", "git --git-dir ".. local_path .."/.git pull origin ".. branch .."" }
+    while result:running() do coroutine.yield(0.1) end
+
+    --local result = io.popen("git --git-dir ".. local_path .."/.git pull origin ".. branch ..""):read("*a")
+
+    return result:read_stdout()
 end-- }}}
 
 -- GIT repo clone
 function M.git_clone(local_path, link, branch)-- {{{
     branch = branch or "master"
-    local result = io.popen("git clone -b ".. branch .." '".. link .."' ".. local_path .."/ && echo -n 'repo cloned'"):read("*a")
 
-    if result == "repo cloned" then
-        return true
-    end
+    local result = process.start { "sh", "-c", "git clone -b ".. branch .." '".. link .."' ".. local_path .."/ && echo -n 'repo cloned'"}
+    while result:running() do coroutine.yield(0.1) end
+
+    --local result = io.popen("git clone -b ".. branch .." '".. link .."' ".. local_path .."/ && echo -n 'repo cloned'"):read("*a")
+
+    if result:read_stdout() == "repo cloned" then return true end
     return false
 end-- }}}
 
