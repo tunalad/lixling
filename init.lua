@@ -114,7 +114,6 @@ local function download_plugins()-- {{{
                 download_raw(dir_plugs, dummy , plug)
                 download_repo(dummy, plug)
             end
-            coroutine.yield(0.1)
         end
         core.log("LIXLING INSTALL: All plugins have been downloaded.")
     end)
@@ -178,7 +177,6 @@ local function update_plugins()-- {{{
                 update_raw(dir_plugs, dummy , plug)
                 update_repo(dummy, plug)
             end
-            coroutine.yield(0.1)
         end
         core.log("LIXLING UPDATE: All plugins are up to date.")
     end)
@@ -190,7 +188,6 @@ local function upgrade_self()-- {{{
     core.log("LIXLING UPGRADE: Running the upgrade process. Please wait.")
 
     core.add_thread(function()
-        coroutine.yield(0.1)
         local status = utils.git_pull("lixling/")
 
         if not status == "Already up to date." then
