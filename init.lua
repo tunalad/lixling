@@ -203,9 +203,11 @@ end-- }}}
 
 -----------------------------------------------------------------------
 
-command.add(nil, {["lixling:install"] = download_plugins})
-command.add(nil, {["lixling:clear"] = clear_plugins})
-command.add(nil, {["lixling:update"] = update_plugins})
-command.add(nil, {["lixling:upgrade"] = upgrade_self})
+command.add(nil, {
+    ["lixling:install"] = download_plugins,
+    ["lixling:update"] = update_plugins,
+    ["lixling:upgrade"] = upgrade_self,
+    ["lixling:clear"] = clear_plugins,
+})
 
 return { plugins = plugins }
