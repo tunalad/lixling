@@ -17,7 +17,6 @@ end-- }}}
 -- Looks for unlisted files in the plugins dir
 local function clear_plugins()-- {{{
     core.log("LIXLING CLEAR: Running the clearing process. Please wait.")
-    command.perform("core:open-log")
 
     local dir_plugs = utils.dir_lookup("plugins/")
 
@@ -90,7 +89,6 @@ end-- }}}
 
 local function download_plugins()-- {{{
     core.log("LIXLING INSTALL: Running the install process. Please wait.")
-    command.perform("core:open-log")
 
     local dir_plugs = utils.dir_lookup("plugins/")
 
@@ -155,7 +153,6 @@ end-- }}}
 
 local function update_plugins()-- {{{
     core.log("LIXLING UPDATE: Running the update process. Please wait.")
-    command.perform("core:open-log")
 
     local dir_plugs = utils.dir_lookup("plugins/")
 
