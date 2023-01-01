@@ -68,7 +68,7 @@ local function download_raw(dir_plugs, plugins_list, plug)-- {{{
     if not utils.array_has_value(dir_plugs, plug..".lua") then
         if utils.string_ends_with(plugins_list[plug][1], ".lua") then
             utils.curl(plug..".lua", plugins_list[plug][1])
-            core.log("LIXLING: Downloaded '".. plug .. ".lua'")
+            core.log("LIXLING ISNTALL: Downloaded '".. plug .. ".lua'")
         end
     end
 end-- }}}
@@ -80,7 +80,7 @@ local function download_repo(plugins_list, plug, branch)-- {{{
         local status = utils.git_clone("plugins/"..plug, plugins_list[plug][1], branch)
 
         if status then
-            core.log("LIXLING: Downloaded '" .. plug .. "'.")
+            core.log("LIXLING INSTALL: Downloaded '" .. plug .. "'.")
             if plugins_list[plug][3] ~= nil then
                 os.execute("cd plugins/".. plug .."; "..plugins_list[plug][3])
             end
@@ -133,7 +133,7 @@ local function update_raw(dir_plugs, plugins_list, plug)-- {{{
             and utils.string_ends_with(plugins_list[plug][1], ".lua")and utils.array_has_value(dir_plugs, plug..".lua") then
 
         utils.curl(plug..".lua", plugins_list[plug][1])
-        core.log("LIXLING: UPDATE: '".. (plug..".lua") .."'.")
+        core.log("LIXLING UPDATE: '".. (plug..".lua") .."'.")
     end
 end-- }}}
 
@@ -144,7 +144,7 @@ local function update_repo(plugins_list, plug, branch)-- {{{
         local status = utils.git_pull("plugins/"..plug, branch)
 
         if not status == "Already up to date." then
-            core.log("LIXLING: '".. plug .. "' repo updated.")
+            core.log("LIXLING UPDATE: '".. plug .. "' repo updated.")
 
             if plugins_list[plug][3] ~= nil then
                 os.execute("cd plugins/".. plug .."; "..plugins_list[plug][3])
@@ -154,7 +154,7 @@ local function update_repo(plugins_list, plug, branch)-- {{{
 end-- }}}
 
 local function update_plugins()-- {{{
-    core.log("LIXLING Update: Running the update process. Please wait.")
+    core.log("LIXLING UPDATE: Running the update process. Please wait.")
     command.perform("core:open-log")
 
     local dir_plugs = utils.dir_lookup("plugins/")
