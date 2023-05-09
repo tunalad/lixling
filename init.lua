@@ -8,6 +8,7 @@ local utils = require "lixling/utils"
 
 -----------------------------------------------------------------------
 local plugins_list = {} -- list of the plugins found in the init.lua
+local plugins_path = USERDIR.."/plugins/"
 
 -- Function gets the table from main config file and assigns it to the `plugins_list` in this file
 local function plugins(plug_list)-- {{{
@@ -18,7 +19,7 @@ end-- }}}
 local function clear_plugins()-- {{{
     core.log("LIXLING CLEAR: Running the clearing process. Please wait.")
 
-    local dir_plugs = utils.dir_lookup("plugins/")
+    local dir_plugs = utils.dir_lookup(plugins_path)
 
     local clear_list = {}
     local clear_size = 0
@@ -67,7 +68,7 @@ local function download_raw(dir_plugs, plugins_list, plug)-- {{{
     if not utils.array_has_value(dir_plugs, plug..".lua") then
         if utils.string_ends_with(plugins_list[plug][1], ".lua") then
             utils.curl(plug..".lua", plugins_list[plug][1])
-            core.log("LIXLING ISNTALL: Downloaded '".. plug .. ".lua'")
+            core.log("LIXLING INSTALL: Downloaded '".. plug .. ".lua'")
         end
     end
 end-- }}}
@@ -76,7 +77,7 @@ end-- }}}
 local function download_repo(plugins_list, plug, branch)-- {{{
     branch = branch or "master"
     if utils.string_ends_with(plugins_list[plug][1], ".git") then
-        local status = utils.git_clone("plugins/"..plug, plugins_list[plug][1], branch)
+        local status = utils.git_clone(plugins_path..plug, plugins_list[plug][1], branch)
 
         if status then
             core.log("LIXLING INSTALL: Downloaded '" .. plug .. "'.")
@@ -90,7 +91,7 @@ end-- }}}
 local function download_plugins()-- {{{
     core.log("LIXLING INSTALL: Running the install process. Please wait.")
 
-    local dir_plugs = utils.dir_lookup("plugins/")
+    local dir_plugs = utils.dir_lookup(plugins_path)
 
     core.add_thread(function()
         for plug in pairs(plugins_list) do
@@ -138,7 +139,7 @@ end-- }}}
 local function update_repo(plugins_list, plug, branch)-- {{{
     branch = branch or "master"
     if utils.string_ends_with(plugins_list[plug][1], ".git") then
-        local status = utils.git_pull("plugins/"..plug, branch)
+        local status = utils.git_pull(plugins_path..plug, branch)
 
         if not status == "Already up to date." then
             core.log("LIXLING UPDATE: '".. plug .. "' repo updated.")
@@ -153,7 +154,7 @@ end-- }}}
 local function update_plugins()-- {{{
     core.log("LIXLING UPDATE: Running the update process. Please wait.")
 
-    local dir_plugs = utils.dir_lookup("plugins/")
+    local dir_plugs = utils.dir_lookup(plugins_path)
 
     core.add_thread(function()
         for plug in pairs(plugins_list) do
@@ -188,7 +189,7 @@ local function upgrade_self()-- {{{
     core.log("LIXLING UPGRADE: Running the upgrade process. Please wait.")
 
     core.add_thread(function()
-        local status = utils.git_pull("lixling/")
+        local status = utils.git_pull(USERDIR.."/lixling/")
 
         if not status == "Already up to date." then
             core.log("LIXLING UPGRADE: Upgraded to the latest version.")
