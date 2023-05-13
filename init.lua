@@ -8,11 +8,40 @@ local utils = require "lixling/utils"
 
 -----------------------------------------------------------------------
 local plugins_list = {} -- list of the plugins found in the init.lua
-local plugins_path = USERDIR.."/plugins/"
+local plugins_path = nil
 
 -- Function gets the table from main config file and assigns it to the `plugins_list` in this file
-local function plugins(plug_list)-- {{{
+local function plugins_old(plug_path, plug_list)-- {{{
+    plugins_path = plug_path or USERDIR.."/plugins/"
     plugins_list = plug_list
+end-- }}}
+
+local function plugins(...)-- {{{
+    local param_num = select("#", ...)
+
+    -- single parameter
+    if param_num == 1 then
+        local param1 = ...
+        if type(param1) ~= "table" then
+            core.log("LIXLING ERROR: Invalid parameter: expected table.")
+            return
+        end
+        plugins_path = USERDIR.."/plugins/"
+        plugins_list = param1
+
+    -- two parameters
+    elseif param_num == 2 then
+        local param1, param2 = ...
+        if type(param1) ~= "string" or type(param2) ~= "table" then
+            core.log("LIXLING ERROR: Invalid parameters: expected (string, table).")
+            return
+        end
+        plugins_path = param1
+        plugins_list = param2
+    else 
+        core.log("LIXLING ERROR: Invalid number of parameters: expected 1 or 2.")
+    end
+
 end-- }}}
 
 -- Looks for unlisted files in the plugins dir
@@ -48,10 +77,10 @@ local function clear_plugins()-- {{{
                 if(string.lower(input) == "y" or string.lower(input) == "yes" ) then
                     for plug in ipairs(clear_list) do
                         core.log("LIXLING CLEAR: Moving: '".. clear_list[plug].."'.")
-                        io.popen("mkdir lixling/exiled"):read()
-                        os.rename("plugins/".. clear_list[plug], "lixling/exiled/".. clear_list[plug])
+                        io.popen("mkdir "..USERDIR.."/lixling/exiled"):read()
+                        os.rename(plugins_path..clear_list[plug], USERDIR.."/lixling/exiled/"..clear_list[plug])
                     end
-                    core.log("LIXLING CLEAR: ".. clear_size .. " plugins exiled. You can find them in '~/.config/lite-xl/lixling/exiled'.") 
+                    core.log("LIXLING CLEAR: ".. clear_size .. " plugins exiled. You can find them in '"..USERDIR.."/lixling/exiled'.") 
                 end
             end
         })
@@ -92,6 +121,7 @@ local function download_plugins()-- {{{
     core.log("LIXLING INSTALL: Running the install process. Please wait.")
 
     local dir_plugs = utils.dir_lookup(plugins_path)
+    io.popen("mkdir "..USERDIR.."/plugins/"):read()
 
     core.add_thread(function()
         for plug in pairs(plugins_list) do
@@ -127,7 +157,7 @@ end-- }}}
 -- RAW .LUA FILE
 local function update_raw(dir_plugs, plugins_list, plug)-- {{{
     -- if IS_LISTED and IS_RAW_LUA_FILE_LINK and IS_DOWNLOADED
-    if utils.diff("plugins/"..plug..".lua", "<(curl -s ".. plugins_list[plug][1]..")")
+    if utils.diff(plugins_path..plug..".lua", "<(curl -s ".. plugins_list[plug][1]..")")
             and utils.string_ends_with(plugins_list[plug][1], ".lua")and utils.array_has_value(dir_plugs, plug..".lua") then
 
         utils.curl(plug..".lua", plugins_list[plug][1])
