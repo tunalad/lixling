@@ -10,12 +10,6 @@ local utils = require("lixling/utils")
 local plugins_list = {} -- list of the plugins found in the init.lua
 local plugins_path = nil
 
--- Function gets the table from main config file and assigns it to the `plugins_list` in this file
-local function plugins_old(plug_path, plug_list) -- {{{
-    plugins_path = plug_path or USERDIR .. "/plugins/"
-    plugins_list = plug_list
-end -- }}}
-
 local function plugins(...) -- {{{
     local param_num = select("#", ...)
 
@@ -48,7 +42,6 @@ local function clear_plugins() -- {{{
     core.log("LIXLING CLEAR: Running the clearing process. Please wait.")
 
     local dir_plugs = utils.dir_lookup(plugins_path)
-    core.log(plugins_path)
     local clear_list = {}
     local clear_size = 0
 
@@ -102,7 +95,7 @@ end -- }}}
 local function download_raw(dir_plugs, plugins_list, plug) -- {{{
     if not utils.array_has_value(dir_plugs, plug .. ".lua") then
         if utils.string_ends_with(plugins_list[plug][1], ".lua") then
-            utils.curl(plug .. ".lua", plugins_list[plug][1])
+            utils.curl(plugins_path .. plug .. ".lua", plugins_list[plug][1])
             core.log("LIXLING INSTALL [raw]: Downloaded '" .. plug .. ".lua'")
         end
     end
@@ -127,6 +120,7 @@ local function download_plugins() -- {{{
     core.log("LIXLING INSTALL: Running the install process. Please wait.")
 
     local dir_plugs = utils.dir_lookup(plugins_path)
+    -- has to be done via popen, so the directory gets created before downloading anything
     io.popen("mkdir " .. USERDIR .. "/plugins/"):read()
 
     core.add_thread(function()
@@ -168,7 +162,7 @@ local function update_raw(dir_plugs, plugins_list, plug) -- {{{
         and utils.string_ends_with(plugins_list[plug][1], ".lua")
         and utils.array_has_value(dir_plugs, plug .. ".lua")
     then
-        utils.curl(plug .. ".lua", plugins_list[plug][1])
+        utils.curl(plugins_path .. plug .. ".lua", plugins_list[plug][1])
         core.log("LIXLING UPDATE [raw]: '" .. (plug .. ".lua") .. "'.")
     end
 end -- }}}

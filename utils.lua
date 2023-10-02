@@ -30,10 +30,8 @@ function M.string_ends_with(str, ending) -- {{{
 end -- }}}
 
 -- CURL Downloading
-function M.curl(file, link) -- {{{
-    local curl =
-        process.start({ "sh", "-c", "curl -o 'plugins/" .. file .. "' -s " .. link .. " && echo 'file downloaded'" })
-
+function M.curl(path, link) -- {{{
+    local curl = process.start({ "sh", "-c", "curl -o '" .. path .. "' -s " .. link .. " && echo 'file downloaded'" })
     while curl:running() do
         coroutine.yield(0.1)
     end
