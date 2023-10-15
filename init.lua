@@ -95,7 +95,7 @@ end -- }}}
 local function download_raw(dir_plugs, plugins_list, plug) -- {{{
     if not utils.array_has_value(dir_plugs, plug .. ".lua") then
         if utils.string_ends_with(plugins_list[plug][1], ".lua") then
-            utils.curl(plugins_path .. plug .. ".lua", plugins_list[plug][1])
+            utils.curl(plugins_path .. "/" .. plug .. ".lua", plugins_list[plug][1])
             core.log("LIXLING INSTALL [raw]: Downloaded '" .. plug .. ".lua'")
         end
     end
@@ -162,7 +162,7 @@ local function update_raw(dir_plugs, plugins_list, plug) -- {{{
         and utils.string_ends_with(plugins_list[plug][1], ".lua")
         and utils.array_has_value(dir_plugs, plug .. ".lua")
     then
-        utils.curl(plugins_path .. plug .. ".lua", plugins_list[plug][1])
+        utils.curl(plugins_path .. "/" .. plug .. ".lua", plugins_list[plug][1])
         core.log("LIXLING UPDATE [raw]: '" .. (plug .. ".lua") .. "'.")
     end
 end -- }}}
