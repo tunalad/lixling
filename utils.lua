@@ -58,6 +58,10 @@ end
 function M.git_pull(local_path, branch) -- {{{
     branch = branch or "master"
 
+    process.start({ "sh", "-c", "git --git-dir " .. local_path .. "/.git fetch origin " .. branch .. "" })
+    process.start({ "sh", "-c", "git --git-dir " .. local_path .. "/.git fetch reset --hard FETCH_HEAD" })
+    -- you shoulnd't have edited the plugin in the first place partner!
+
     local result = process.start({ "sh", "-c", "git --git-dir " .. local_path .. "/.git pull origin " .. branch .. "" })
     while result:running() do
         coroutine.yield(0.1)

@@ -168,16 +168,16 @@ local function update_raw(dir_plugs, plugs_list, plug) -- {{{
 end -- }}}
 
 -- GIT REPO PULL
-local function update_repo(plugins_list, plug, branch) -- {{{
+local function update_repo(plugs_list, plug, branch) -- {{{
     branch = branch or "master"
-    if utils.string_ends_with(plugins_list[plug][1], ".git") then
+    if utils.string_ends_with(plugs_list[plug][1], ".git") then
         local status = utils.git_pull(plugins_path .. plug, branch)
 
         if not status == "Already up to date." then
             core.log("LIXLING UPDATE [repo]: '" .. plug .. "' repo updated.")
 
-            if plugins_list[plug][3] ~= nil then
-                os.execute("cd plugins/" .. plug .. "; " .. plugins_list[plug][3])
+            if plugs_list[plug][3] ~= nil then
+                os.execute("cd plugins/" .. plug .. "; " .. plugs_list[plug][3])
             end
         end
     end
