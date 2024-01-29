@@ -155,14 +155,14 @@ end -- }}}
 -----------------------------------------------------------------------
 
 -- RAW .LUA FILE
-local function update_raw(dir_plugs, plugins_list, plug) -- {{{
+local function update_raw(dir_plugs, plugs_list, plug) -- {{{
     -- if IS_LISTED and IS_RAW_LUA_FILE_LINK and IS_DOWNLOADED
     if
-        utils.diff(plugins_path .. plug .. ".lua", "<(curl -s " .. plugins_list[plug][1] .. ")")
-        and utils.string_ends_with(plugins_list[plug][1], ".lua")
+        utils.diff(plugins_path .. plug .. ".lua", "<(curl -s " .. plugs_list[plug][1] .. ")")
+        and utils.string_ends_with(plugs_list[plug][1], ".lua")
         and utils.array_has_value(dir_plugs, plug .. ".lua")
     then
-        utils.curl(plugins_path .. "/" .. plug .. ".lua", plugins_list[plug][1])
+        utils.curl(plugins_path .. "/" .. plug .. ".lua", plugs_list[plug][1])
         core.log("LIXLING UPDATE [raw]: '" .. (plug .. ".lua") .. "'.")
     end
 end -- }}}

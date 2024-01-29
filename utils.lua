@@ -43,21 +43,16 @@ function M.curl(path, link) -- {{{
 end -- }}}
 
 -- UNIX diff
-function M.diff(old_file, new_file) -- {{{
-    core.add_thread(function()
-        local diff = process.start({ "sh", "-c", "diff " .. old_file .. " " .. new_file .. " | wc -l" })
+function M.diff(old_file, new_file)
+    local diff = process.start({ "sh", "-c", "diff " .. old_file .. " " .. new_file .. " | wc -l" })
 
-        while diff:running() do
-            coroutine.yield(0.1)
-        end
+    while diff:running() do
+        coroutine.yield(0.1)
+    end
 
-        if tonumber(diff:read_stdout()) > 1 then
-            return true
-        end
-
-        return false
-    end)
-end -- }}}
+    local result = tonumber(diff:read_stdout()) > 1
+    return result
+end
 
 -- GIT repo updating
 function M.git_pull(local_path, branch) -- {{{
