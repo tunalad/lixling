@@ -75,7 +75,7 @@ local function clear_plugins()
                 if string.lower(input) == "y" or string.lower(input) == "yes" then
                     for plug in ipairs(clear_list) do
                         lixlog.clear("Moving: '" .. clear_list[plug] .. "'.")
-                        io.popen("mkdir " .. USERDIR .. "/lixling/exiled"):read()
+                        utils.mkdir(USERDIR .. "/lixling/exiled")
                         os.rename(plugins_path .. clear_list[plug], USERDIR .. "/lixling/exiled/" .. clear_list[plug])
                     end
                     lixlog.clear(
@@ -97,8 +97,8 @@ local function download_plugins()
     lixlog.install("", "Running the install process. Please wait.")
 
     local dir_plugs = utils.dir_lookup(plugins_path)
-    -- has to be done via popen, so the directory gets created before downloading anything
-    io.popen("mkdir " .. USERDIR .. "/plugins/"):read()
+
+    utils.mkdir(plugins_path)
 
     core.add_thread(function()
         download.set_plugins_path(plugins_path)
