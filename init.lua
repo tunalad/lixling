@@ -70,20 +70,39 @@ local function clear_plugins()
 
     -- Handles clearing user input
     if clear_size > 0 then
-        core.command_view:enter("LIXLING CLEAR: Found " .. clear_size .. " unlisted plugins, exile them? (y/N)", {
-            submit = function(input)
-                if string.lower(input) == "y" or string.lower(input) == "yes" then
-                    for plug in ipairs(clear_list) do
-                        lixlog.clear("Moving: '" .. clear_list[plug] .. "'.")
-                        utils.mkdir(USERDIR .. "/lixling/exiled")
-                        os.rename(plugins_path .. clear_list[plug], USERDIR .. "/lixling/exiled/" .. clear_list[plug])
+        core.command_view:enter(
+            "LIXLING CLEAR: Found " .. clear_size .. " unlisted plugins, exile them? ([y]es/[N]o/[d]elete)",
+            {
+                submit = function(input)
+                    if string.lower(input) == "y" or string.lower(input) == "yes" then
+                        for plug in ipairs(clear_list) do
+                            lixlog.clear("Moving: '" .. clear_list[plug] .. "'.")
+                            utils.mkdir(USERDIR .. "/lixling/exiled")
+                            os.rename(
+                                plugins_path .. clear_list[plug],
+                                USERDIR .. "/lixling/exiled/" .. clear_list[plug]
+                            )
+                        end
+                        lixlog.clear(
+                            clear_size .. " plugins exiled. You can find them in '" .. USERDIR .. "/lixling/exiled'."
+                        )
+                    elseif string.lower(input) == "d" or string.lower(input) == "delete" then
+                        core.command_view:enter("LIXLING CLEAR: Are you sure? Deleting can't be undone. ([y]es/[N]o)", {
+                            submit = function(delete)
+                                if string.lower(delete) == "y" or string.lower(delete) == "yes" then
+                                    for plug in ipairs(clear_list) do
+                                        lixlog.clear("Deleting: '" .. clear_list[plug] .. "'.")
+                                        --os.remove(plugins_path .. clear_list[plug])
+                                        utils.rmrf(plugins_path .. clear_list[plug])
+                                    end
+                                end
+                                lixlog.clear(clear_size .. " plugins deleted. They can't be retrieved.")
+                            end,
+                        })
                     end
-                    lixlog.clear(
-                        clear_size .. " plugins exiled. You can find them in '" .. USERDIR .. "/lixling/exiled'."
-                    )
-                end
-            end,
-        })
+                end,
+            }
+        )
         return 0
     end
     lixlog.clear("No unlisted plugins found.")

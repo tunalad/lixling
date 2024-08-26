@@ -1,3 +1,5 @@
+local lixlog = require("lixling/lixlog")
+
 local process = process or {}
 
 local M = {}
@@ -39,7 +41,20 @@ function M.mkdir(full_path)
     --end
     --return mkdir:read_stdout()
 
-    return io.popen(full_path):read()
+    return io.popen("mkdir " .. full_path):read()
+end
+
+-- Run `rm -rf`
+function M.rmrf(path)
+    local rm = process.start({ "sh", "-c", "rm -rf " .. path .. "&& echo 'deleted stuff'" })
+
+    while true do
+        local rdbuf = rm:read_stdout()
+        if not rdbuf then
+            lixlog.log("deleting shyt")
+            break
+        end
+    end
 end
 
 -- CURL Downloading
