@@ -1,9 +1,9 @@
-local core = require("core")
+local process = process or {}
 
 local M = {}
 
 -- Lists items in a directory and returns an array
-function M.dir_lookup(dir) -- {{{
+function M.dir_lookup(dir)
     local files_array = {}
 
     for file in io.popen("ls -p " .. dir .. " "):lines() do
@@ -11,10 +11,10 @@ function M.dir_lookup(dir) -- {{{
     end
 
     return files_array
-end -- }}}
+end
 
 -- Checks if array has value in it
-function M.array_has_value(table, value) -- {{{
+function M.array_has_value(table, value)
     for item in pairs(table) do
         if table[item] == value then
             return true
@@ -22,15 +22,15 @@ function M.array_has_value(table, value) -- {{{
     end
 
     return false
-end -- }}}
+end
 
 -- Checks if string ends with
-function M.string_ends_with(str, ending) -- {{{
+function M.string_ends_with(str, ending)
     return ending == "" or str:sub(-#ending) == ending
-end -- }}}
+end
 
 -- CURL Downloading
-function M.curl(path, link) -- {{{
+function M.curl(path, link)
     local curl = process.start({ "sh", "-c", "curl -o '" .. path .. "' -s " .. link .. " && echo 'file downloaded'" })
     while curl:running() do
         coroutine.yield(0.1)
@@ -40,7 +40,7 @@ function M.curl(path, link) -- {{{
     end
 
     return false
-end -- }}}
+end
 
 -- UNIX diff
 function M.diff(old_file, new_file)
@@ -55,12 +55,15 @@ function M.diff(old_file, new_file)
 end
 
 -- GIT repo updating
-function M.git_pull(local_path, branch) -- {{{
+function M.git_pull(local_path, branch, reset_hard)
     branch = branch or "master"
+    reset_hard = reset_hard or true -- you shoulnd't have edited the plugin in the first place partner!
 
-    process.start({ "sh", "-c", "git --git-dir " .. local_path .. "/.git fetch origin " .. branch .. "" })
-    process.start({ "sh", "-c", "git --git-dir " .. local_path .. "/.git fetch reset --hard FETCH_HEAD" })
-    -- you shoulnd't have edited the plugin in the first place partner!
+    if reset_hard then
+        process.start({ "sh", "-c", "git --git-dir " .. local_path .. "/.git fetch reset --hard FETCH_HEAD" })
+    else
+        process.start({ "sh", "-c", "git --git-dir " .. local_path .. "/.git fetch origin " .. branch .. "" })
+    end
 
     local result = process.start({ "sh", "-c", "git --git-dir " .. local_path .. "/.git pull origin " .. branch .. "" })
     while result:running() do
@@ -68,10 +71,10 @@ function M.git_pull(local_path, branch) -- {{{
     end
 
     return result:read_stdout()
-end -- }}}
+end
 
 -- GIT repo clone
-function M.git_clone(local_path, link, branch) -- {{{
+function M.git_clone(local_path, link, branch)
     branch = branch or "master"
 
     local result = process.start({
@@ -87,6 +90,6 @@ function M.git_clone(local_path, link, branch) -- {{{
         return true
     end
     return false
-end -- }}}
+end
 
 return M
