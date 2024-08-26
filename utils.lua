@@ -1,5 +1,3 @@
-local lixlog = require("lixling/lixlog")
-
 local process = process or {}
 
 local M = {}
@@ -34,14 +32,14 @@ end
 
 -- Run mkdir
 function M.mkdir(full_path)
-    --local mkdir = process.start({ "sh", "-c", "mkdir " .. full_path })
+    local mkdir = process.start({ "sh", "-c", "mkdir " .. full_path })
 
-    --while mkdir:running() do
-    --    coroutine.yield(0.1)
-    --end
-    --return mkdir:read_stdout()
-
-    return io.popen("mkdir " .. full_path):read()
+    while true do
+        local rdbuf = mkdir:read_stdout()
+        if not rdbuf then
+            break
+        end
+    end
 end
 
 -- Run `rm -rf`
@@ -51,7 +49,6 @@ function M.rmrf(path)
     while true do
         local rdbuf = rm:read_stdout()
         if not rdbuf then
-            lixlog.log("deleting shyt")
             break
         end
     end
