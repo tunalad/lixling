@@ -3,7 +3,7 @@ local lixlog = require("lixling/lixlog")
 
 local M = {}
 
-local plugins_path = nil
+local plugins_path = ""
 
 function M.set_plugins_path(path)
     plugins_path = path
